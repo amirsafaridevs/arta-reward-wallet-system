@@ -34,8 +34,11 @@ class AdminServiceProvider extends AbstractServiceProvider
     {
       
         $mainMenu = $this->container->get('admin.mainmenu');
+        $mainMenu->setContainer($this->container);
         $mainMenu->boot();
+        
         $settingMenu = $this->container->get('admin.settingmenu');
+        $settingMenu->setContainer($this->container);
         $settingMenu->boot();
     }
 }
