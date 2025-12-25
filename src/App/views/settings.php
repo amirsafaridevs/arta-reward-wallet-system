@@ -133,6 +133,7 @@
         .form-group input[type="text"],
         .form-group input[type="number"],
         .form-group input[type="email"],
+        .form-group textarea,
         .form-group select {
             width: 100%;
             padding: 12px;
@@ -141,6 +142,11 @@
             font-size: 14px;
             transition: border-color 0.2s ease;
             font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
         }
 
         .form-group input:focus,
@@ -402,6 +408,7 @@
 
             <div class="tabs">
                 <button type="button" class="tab-button active" onclick="switchTab('general')">تنظیمات کلی</button>
+                <button type="button" class="tab-button" onclick="switchTab('popup')">پاپ‌آپ</button>
                 <button type="button" class="tab-button" onclick="switchTab('fields')">فیلدهای حساب کاربری</button>
             </div>
 
@@ -446,16 +453,35 @@
                             این مبلغ زمانی به کیف پول کاربر اضافه می‌شود که تمام فیلدهای واجب را پر کند.
                         </p>
                     </div>
+                </div>
+            </div>
+
+            <div id="popup-tab" class="tab-content">
+                <div class="form-section">
+                    <h2>تنظیمات پاپ‌آپ تکمیل پروفایل</h2>
+                    
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" 
+                                   id="enable_popup" 
+                                   name="enable_popup" 
+                                   value="1"
+                                   <?php checked($settings['enable_popup'], 1); ?>>
+                            <label for="enable_popup">فعال کردن نمایش پاپ‌آپ</label>
+                        </div>
+                        <p style="font-size: 12px; color: #757575; margin-top: 8px;">
+                            با فعال کردن این گزینه، پاپ‌آپ برای کاربرانی که پروفایل خود را تکمیل نکرده‌اند نمایش داده می‌شود.
+                        </p>
+                    </div>
 
                     <div class="form-group">
-                        <label for="profile_completion_message">متن ناتیف تکمیل پروفایل</label>
-                        <input type="text" 
-                               id="profile_completion_message" 
-                               name="profile_completion_message" 
-                               value="<?php echo esc_attr($settings['profile_completion_message']); ?>"
-                               placeholder="با تکمیل اطلاعات حساب خود پاداش بگیرید">
+                        <label for="popup_message">متن پاپ‌آپ</label>
+                        <textarea id="popup_message" 
+                                  name="popup_message" 
+                                  rows="3"
+                                  placeholder="با تکمیل اطلاعات حساب خود پاداش بگیرید"><?php echo esc_textarea($settings['popup_message']); ?></textarea>
                         <p style="font-size: 12px; color: #757575; margin-top: 8px;">
-                            این متن در بالای صفحات حساب کاربری برای کاربرانی که پروفایل خود را تکمیل نکرده‌اند نمایش داده می‌شود.
+                            این متن در پاپ‌آپ برای کاربرانی که پروفایل خود را تکمیل نکرده‌اند نمایش داده می‌شود.
                         </p>
                     </div>
                 </div>
