@@ -233,9 +233,9 @@ class Application implements ApplicationInterface
      * @param string $path
      * @return string
      */
-    public function url(string $path = ''): string
+    public static function url(string $path = ''): string
     {
-        return plugin_dir_url(__FILE__) . $path;
+        return plugin_dir_url(self::get()->getBasePath()) . $path;
     }
 
     /**
@@ -244,9 +244,9 @@ class Application implements ApplicationInterface
      * @param string $path
      * @return string
      */
-    public function assets(string $path = ''): string
+    public static function assets(string $path = ''): string
     {
-        return $this->url('assets/' . $path);
+        return self::url('assets/' . $path);
     }
 
     /**
@@ -258,8 +258,9 @@ class Application implements ApplicationInterface
      */
     public static function view(string $viewPath, array $data = []): void
     {
+        
         $instance = self::get();
-        $fullPath = $instance->path('views' . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $viewPath) . '.php');
+        $fullPath = $instance->path('Views' . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $viewPath) . '.php');
         if (file_exists($fullPath)) {
             extract($data, EXTR_SKIP);
             include $fullPath;
