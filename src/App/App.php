@@ -35,7 +35,7 @@ class App extends AbstractSingleton
      */
     public function __construct() {
         $this->application = Application::get();
-        $this->application->setProperty('basePath', plugin_dir_path(__FILE__));
+        $this->application->setProperty('basePath', dirname(plugin_dir_path(__FILE__), 2));
         $this->application->setProperty('version', '0.0.1');
         $this->init();
     }
