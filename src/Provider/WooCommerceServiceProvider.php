@@ -2,7 +2,7 @@
 namespace ArtaRewardWalletSystem\Provider;
 
 use ArtaRewardWalletSystem\Contract\Abstract\AbstractServiceProvider;
-
+use ArtaRewardWalletSystem\Service\WooCommerce\AccountDetails;
 class WooCommerceServiceProvider extends AbstractServiceProvider
 {
     /**
@@ -12,10 +12,12 @@ class WooCommerceServiceProvider extends AbstractServiceProvider
      */
     protected function registerServices(): void
     {
-        // TODO: Implement registerServices() method.
+        $accountDetails = $this->container->singleton('woocommerce.accountdetails', AccountDetails::class);
     }
     protected function bootServices(): void
     {
-        // TODO: Implement bootServices() method.
+        $accountDetails = $this->container->get('woocommerce.accountdetails');
+        $accountDetails->setContainer($this->container);
+        $accountDetails->boot();
     }
 }
