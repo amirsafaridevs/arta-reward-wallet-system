@@ -1,0 +1,2 @@
+# arta-reward-wallet-system
+This WooCommerce plugin implements a wallet-based reward system that grants users incentives for profile completion, successful referrals, and qualifying purchases. Wallet credits and points are applied automatically based on configurable rules defined by the site administrator, ensuring controlled, one-time rewards and seamless integration with the WooCommerce account system.
