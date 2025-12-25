@@ -409,6 +409,7 @@
             <div class="tabs">
                 <button type="button" class="tab-button active" onclick="switchTab('general')">تنظیمات کلی</button>
                 <button type="button" class="tab-button" onclick="switchTab('popup')">پاپ‌آپ</button>
+                <button type="button" class="tab-button" onclick="switchTab('sms')">SMS</button>
                 <button type="button" class="tab-button" onclick="switchTab('fields')">فیلدهای حساب کاربری</button>
             </div>
 
@@ -482,6 +483,47 @@
                                   placeholder="با تکمیل اطلاعات حساب خود پاداش بگیرید"><?php echo esc_textarea($settings['popup_message']); ?></textarea>
                         <p style="font-size: 12px; color: #757575; margin-top: 8px;">
                             این متن در پاپ‌آپ برای کاربرانی که پروفایل خود را تکمیل نکرده‌اند نمایش داده می‌شود.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sms-tab" class="tab-content">
+                <div class="form-section">
+                    <h2>تنظیمات SMS</h2>
+                    
+                    <div class="form-group">
+                        <label for="sms_api_key">API Key</label>
+                        <input type="text" 
+                               id="sms_api_key" 
+                               name="sms_api_key" 
+                               value="<?php echo esc_attr($settings['sms_api_key']); ?>"
+                               placeholder="کلید API سرویس SMS">
+                        <p style="font-size: 12px; color: #757575; margin-top: 8px;">
+                            کلید API سرویس ارسال SMS خود را وارد کنید.
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sms_parent_number">شماره خط</label>
+                        <input type="text" 
+                               id="sms_parent_number" 
+                               name="sms_parent_number" 
+                               value="<?php echo esc_attr($settings['sms_parent_number']); ?>"
+                               placeholder="شماره خط ارسال SMS">
+                        <p style="font-size: 12px; color: #757575; margin-top: 8px;">
+                            شماره خط ارسال SMS خود را وارد کنید.
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sms_welcome_message">پیام خوش‌آمدگویی</label>
+                        <textarea id="sms_welcome_message" 
+                                  name="sms_welcome_message" 
+                                  rows="4"
+                                  placeholder="خوش آمدید! حساب کاربری شما با موفقیت ایجاد شد."><?php echo esc_textarea($settings['sms_welcome_message']); ?></textarea>
+                        <p style="font-size: 12px; color: #757575; margin-top: 8px;">
+                            این پیام برای کاربران جدید ارسال می‌شود. می‌توانید از متغیرهای {name}، {username} و {password} استفاده کنید.
                         </p>
                     </div>
                 </div>
