@@ -3,9 +3,16 @@
 namespace ArtaRewardWalletSystem\Contract\Abstract;
 
 use ArtaRewardWalletSystem\Contract\Interface\ServiceInterface;
+use ArtaRewardWalletSystem\Contract\Interface\ContainerInterface;
 use ArtaRewardWalletSystem\App\App;
 abstract class AbstractService implements ServiceInterface
 {
+    /**
+     * Container instance
+     *
+     * @var ContainerInterface
+     */
+    protected ContainerInterface $container;
     /**
      * Boot services after registration
      *

@@ -8,6 +8,8 @@
  * Author URI: https://artacode.net
  * License: MIT
  * Text Domain: arta-reward-wallet-system
+ * Requires Plugins: woocommerce,woo-wallet
+ * Requires at least: 6.5
  */
 
 // اتولودر composer را لود کن

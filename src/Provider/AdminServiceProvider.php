@@ -3,7 +3,8 @@
 namespace ArtaRewardWalletSystem\Provider;
 
 use ArtaRewardWalletSystem\Controller\AdminController;
-use ArtaRewardWalletSystem\Service\Admin\Menu;
+use ArtaRewardWalletSystem\Service\Admin\MainMenu;
+use ArtaRewardWalletSystem\Service\Admin\SettingMenu;
 use ArtaRewardWalletSystem\Contract\Abstract\AbstractServiceProvider;
 /**
  * Admin Service Provider
@@ -20,8 +21,8 @@ class AdminServiceProvider extends AbstractServiceProvider
     protected function registerServices(): void
     {
         
-        $menuService = $this->container->singleton('admin.menu', Menu::class);
-        
+        $mainMenu = $this->container->singleton('admin.mainmenu', MainMenu::class);
+        $settingMenu = $this->container->singleton('admin.settingmenu', SettingMenu::class);
     }
 
     /**
@@ -32,8 +33,10 @@ class AdminServiceProvider extends AbstractServiceProvider
     protected function bootServices(): void
     {
       
-        $menuService = $this->container->get('admin.menu');
-      
+        $mainMenu = $this->container->get('admin.mainmenu');
+        $mainMenu->boot();
+        $settingMenu = $this->container->get('admin.settingmenu');
+        $settingMenu->boot();
     }
 }
 

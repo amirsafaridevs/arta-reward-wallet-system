@@ -91,18 +91,6 @@ class Application implements ApplicationInterface
     }
 
     /**
-     * Get a configuration value
-     *
-     * @param string $key
-     * @param mixed $default
-     * @return mixed
-     */
-    public function getProperty(string $key, $default = null)
-    {
-        return property_exists($this, $key) ? $this->{$key} : $default;
-    }
-
-    /**
      * Get the container instance
      *
      * @return ContainerInterface
@@ -238,5 +226,47 @@ class Application implements ApplicationInterface
     {
         return $this->basePath . ($path ? DIRECTORY_SEPARATOR . $path : '');
     }
+
+    /**
+     * Get plugin url
+     *
+     * @param string $path
+     * @return string
+     */
+    public function url(string $path = ''): string
+    {
+        return plugin_dir_url(__FILE__) . $path;
+    }
+
+    /**
+     * Get plugin assets url
+     *
+     * @param string $path
+     * @return string
+     */
+    public function assets(string $path = ''): string
+    {
+        return $this->url('assets/' . $path);
+    }
+
+    /**
+     * Include a view file from the views directory.
+     *
+     * @param string $viewPath Relative path to the view file, without .php extension
+     * @param array $data Optional data array to extract into the view
+     * @return void
+     */
+    public static function view(string $viewPath, array $data = []): void
+    {
+        $instance = self::get();
+        $fullPath = $instance->path('views' . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $viewPath) . '.php');
+        if (file_exists($fullPath)) {
+            extract($data, EXTR_SKIP);
+            include $fullPath;
+        } else {
+            throw new \Exception('View not found: ' . $fullPath);
+        }
+    }
+ 
 }
 
