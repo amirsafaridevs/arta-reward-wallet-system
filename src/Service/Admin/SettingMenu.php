@@ -54,12 +54,17 @@ class SettingMenu extends AbstractService
         $enableRegistrationBonus = isset($_POST['enable_registration_bonus']) ? 1 : 0;
         $registrationBonusAmount = isset($_POST['registration_bonus_amount']) ? floatval($_POST['registration_bonus_amount']) : 0;
         $completionBonusAmount = isset($_POST['completion_bonus_amount']) ? floatval($_POST['completion_bonus_amount']) : 0;
-        $profileCompletionMessage = isset($_POST['profile_completion_message']) ? sanitize_text_field($_POST['profile_completion_message']) : '';
 
         update_option('arta_enable_registration_bonus', $enableRegistrationBonus);
         update_option('arta_registration_bonus_amount', $registrationBonusAmount);
         update_option('arta_completion_bonus_amount', $completionBonusAmount);
-        update_option('arta_profile_completion_message', $profileCompletionMessage);
+
+        // Save popup settings
+        $enablePopup = isset($_POST['enable_popup']) ? 1 : 0;
+        $popupMessage = isset($_POST['popup_message']) ? sanitize_textarea_field($_POST['popup_message']) : '';
+
+        update_option('arta_enable_popup', $enablePopup);
+        update_option('arta_popup_message', $popupMessage);
 
         // Save account fields settings
         // Get default fields to ensure we save all of them
@@ -110,7 +115,8 @@ class SettingMenu extends AbstractService
             'enable_registration_bonus' => get_option('arta_enable_registration_bonus', 0),
             'registration_bonus_amount' => get_option('arta_registration_bonus_amount', 0),
             'completion_bonus_amount' => get_option('arta_completion_bonus_amount', 0),
-            'profile_completion_message' => get_option('arta_profile_completion_message', 'با تکمیل اطلاعات حساب خود پاداش بگیرید'),
+            'enable_popup' => get_option('arta_enable_popup', 1),
+            'popup_message' => get_option('arta_popup_message', 'با تکمیل اطلاعات حساب خود پاداش بگیرید'),
         ];
     }
 
