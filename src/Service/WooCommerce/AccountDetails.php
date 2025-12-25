@@ -345,16 +345,11 @@ class AccountDetails extends AbstractService
     {
         // Check default account fields
         $accountFields = get_option('arta_account_fields', []);
-        $defaultFields = [
-            'account_first_name' => 'first_name',
-            'account_last_name' => 'last_name',
-            'account_display_name' => 'display_name',
-            'account_email' => 'user_email',
-        ];
-
+        
         $user = get_userdata($user_id);
         
         if (!$user) {
+            error_log('ARTA DEBUG: areAllFieldsFilled - No user found');
             return false;
         }
 
@@ -363,26 +358,67 @@ class AccountDetails extends AbstractService
 
         // If no account fields configured, check default required fields
         if (empty($accountFields)) {
+            error_log('ARTA DEBUG: areAllFieldsFilled - No account fields configured, checking defaults');
             // Check default WooCommerce required fields
-            if (empty($user->first_name) || empty($user->last_name) || empty($user->user_email)) {
+            $firstName = get_user_meta($user_id, 'first_name', true);
+            $lastName = get_user_meta($user_id, 'last_name', true);
+            
+            error_log('ARTA DEBUG: firstName=' . $firstName . ', lastName=' . $lastName . ', email=' . $user->user_email);
+            
+            if (empty($firstName) || empty($lastName) || empty($user->user_email)) {
+                error_log('ARTA DEBUG: Default fields not filled');
                 return false;
             }
+            error_log('ARTA DEBUG: Default fields are filled');
             return true;
         }
         
+        error_log('ARTA DEBUG: Checking configured account fields: ' . print_r($accountFields, true));
+        
+        // Map field keys to their storage locations
         foreach ($accountFields as $fieldKey => $fieldData) {
+            error_log('ARTA DEBUG: Checking field: ' . $fieldKey . ' - enabled=' . (isset($fieldData['enabled']) && $fieldData['enabled'] ? 'yes' : 'no') . ', required=' . (isset($fieldData['required']) && $fieldData['required'] ? 'yes' : 'no'));
+            
             if (isset($fieldData['enabled']) && !$fieldData['enabled']) {
+                error_log('ARTA DEBUG: Field ' . $fieldKey . ' is disabled, skipping');
                 continue; // Skip disabled fields
             }
             
             if (isset($fieldData['required']) && $fieldData['required']) {
                 $hasRequiredFields = true;
-                $metaKey = $defaultFields[$fieldKey] ?? '';
-                if ($metaKey) {
-                    $value = $user->$metaKey ?? '';
-                    if (empty($value)) {
-                        return false;
-                    }
+                $value = '';
+                
+                // Get value based on field type
+                switch ($fieldKey) {
+                    case 'account_first_name':
+                        // first_name is stored in user meta
+                        $value = get_user_meta($user_id, 'first_name', true);
+                        break;
+                    case 'account_last_name':
+                        // last_name is stored in user meta
+                        $value = get_user_meta($user_id, 'last_name', true);
+                        break;
+                    case 'account_display_name':
+                        // display_name is in user object
+                        // Skip display_name check if it's the same as username (auto-filled)
+                        $value = $user->display_name ?? '';
+                        if ($value === $user->user_login) {
+                            // display_name is auto-filled from username, consider it empty
+                            $value = '';
+                        }
+                        break;
+                    case 'account_email':
+                        // user_email is in user object
+                        $value = $user->user_email ?? '';
+                        break;
+                }
+                
+                error_log('ARTA DEBUG: Field ' . $fieldKey . ' value = "' . $value . '" (empty=' . (empty($value) ? 'yes' : 'no') . ')');
+                
+                // Check if value is empty
+                if (empty($value)) {
+                    error_log('ARTA DEBUG: Field ' . $fieldKey . ' is empty, returning false');
+                    return false;
                 }
             }
         }
@@ -390,13 +426,18 @@ class AccountDetails extends AbstractService
         // Check custom fields
         $customFields = get_option('arta_custom_account_fields', []);
         
+        error_log('ARTA DEBUG: Custom fields: ' . print_r($customFields, true));
+        
         foreach ($customFields as $field) {
             if (!empty($field['required'])) {
                 $hasRequiredFields = true;
                 $fieldName = 'arta_' . $field['name'];
                 $value = get_user_meta($user_id, $fieldName, true);
                 
+                error_log('ARTA DEBUG: Custom field ' . $fieldName . ' value = "' . $value . '" (empty=' . (empty($value) ? 'yes' : 'no') . ')');
+                
                 if (empty($value)) {
+                    error_log('ARTA DEBUG: Custom field ' . $fieldName . ' is empty, returning false');
                     return false;
                 }
             }
@@ -404,9 +445,11 @@ class AccountDetails extends AbstractService
 
         // If no required fields at all, profile is incomplete
         if (!$hasRequiredFields) {
+            error_log('ARTA DEBUG: No required fields configured, returning false');
             return false;
         }
 
+        error_log('ARTA DEBUG: All required fields are filled, returning true');
         return true;
     }
 
