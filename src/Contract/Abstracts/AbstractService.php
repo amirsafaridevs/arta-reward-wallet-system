@@ -2,8 +2,8 @@
 
 namespace ArtaRewardWalletSystem\Contract\Abstracts;
 
-use ArtaRewardWalletSystem\Contract\Interface\ServiceInterface;
-use ArtaRewardWalletSystem\Contract\Interface\ContainerInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ServiceInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ContainerInterface;
 use ArtaRewardWalletSystem\App\App;
 abstract class AbstractService implements ServiceInterface
 {

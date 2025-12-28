@@ -6,6 +6,7 @@ use ArtaRewardWalletSystem\Service\Admin\MainMenu;
 use ArtaRewardWalletSystem\Service\Admin\SettingMenu;
 use ArtaRewardWalletSystem\Service\Admin\ImportUsers;
 use ArtaRewardWalletSystem\Service\Admin\SmsLogs;
+use ArtaRewardWalletSystem\Service\Admin\UserProfile;
 /**
  * Admin Service Provider
  * 
@@ -25,6 +26,7 @@ class AdminServiceProvider extends AbstractServiceProvider
         $settingMenu = $this->container->singleton('admin.settingmenu', SettingMenu::class);
         $importUsers = $this->container->singleton('admin.importUsers', ImportUsers::class);
         $smsLogs = $this->container->singleton('admin.smsLogs', SmsLogs::class);
+        $userProfile = $this->container->singleton('admin.userProfile', UserProfile::class);
 
     }
 
@@ -51,6 +53,10 @@ class AdminServiceProvider extends AbstractServiceProvider
         $smsLogs = $this->container->get('admin.smsLogs');
         $smsLogs->setContainer($this->container);
         $smsLogs->boot();
+
+        $userProfile = $this->container->get('admin.userProfile');
+        $userProfile->setContainer($this->container);
+        $userProfile->boot();
     }
 }
 

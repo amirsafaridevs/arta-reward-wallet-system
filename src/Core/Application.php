@@ -2,10 +2,10 @@
 
 namespace ArtaRewardWalletSystem\Core;
 
-use ArtaRewardWalletSystem\Contract\Interface\ApplicationInterface;
-use ArtaRewardWalletSystem\Contract\Interface\ContainerInterface;
-use ArtaRewardWalletSystem\Contract\Interface\ServiceProviderInterface;
-use ArtaRewardWalletSystem\Contract\Interface\ServiceRegistryInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ApplicationInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ContainerInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ServiceProviderInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ServiceRegistryInterface;
 
 /**
  * Application Class
@@ -66,10 +66,9 @@ class Application implements ApplicationInterface
     /**
      * Get a configuration value
      *
-     * @param string $key
-     * @return mixed
+     * @return static
      */
-    public static function get(): mixed
+    public static function get()
     {
         if (static::$instance === null) {
             static::$instance = new static();

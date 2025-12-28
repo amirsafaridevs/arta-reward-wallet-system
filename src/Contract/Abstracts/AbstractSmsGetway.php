@@ -2,7 +2,7 @@
 
 namespace ArtaRewardWalletSystem\Contract\Abstracts;
 
-use ArtaRewardWalletSystem\Contract\Interface\SmsGetwayInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\SmsGetwayInterface;
 
 abstract class AbstractSmsGetway implements SmsGetwayInterface
 {
@@ -34,11 +34,11 @@ abstract class AbstractSmsGetway implements SmsGetwayInterface
         return [];
     }
 
-    public static function getBalance(): mixed
+    public static function getBalance()
     {
         return null;
     }
-    public static function getProfile(): mixed
+    public static function getProfile()
     {
         return [];
     }
@@ -51,7 +51,7 @@ abstract class AbstractSmsGetway implements SmsGetwayInterface
         }
         return self::$instance;
     }
-    public static function setConfig(string $key, mixed $value): object
+    public static function setConfig(string $key, $value): object
     {
         self::$config[$key] = $value;
         return self::get();

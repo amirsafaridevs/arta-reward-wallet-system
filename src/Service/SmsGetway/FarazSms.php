@@ -10,7 +10,7 @@ class FarazSms extends AbstractSmsGetway
     protected static $client = null;
     protected static string $apiKey = '';
     
-    public static function getBalance(): mixed
+    public static function getBalance()
     {
         return self::getClient()->getCredit();
     }

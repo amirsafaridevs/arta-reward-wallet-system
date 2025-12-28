@@ -2,14 +2,14 @@
 
 namespace ArtaRewardWalletSystem\Core;
 
-use ArtaRewardWalletSystem\Contract\Interface\ServiceProviderInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ServiceProviderInterface;
 
 /**
  * Service Provider Interface
  * 
  * All service providers must implement this interface
  * 
- * @deprecated Use ArtaRewardWalletSystem\Contract\Interface\ServiceProviderInterface instead
+ * @deprecated Use ArtaRewardWalletSystem\Contract\Interfaces\ServiceProviderInterface instead
  */
 interface ServiceProvider extends ServiceProviderInterface
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace ArtaRewardWalletSystem\Contract\Interface;
+namespace ArtaRewardWalletSystem\Contract\Interfaces;
 
-use ArtaRewardWalletSystem\Contract\Interface\ContainerInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ContainerInterface;
 
 /**
  * Service Provider Interface
