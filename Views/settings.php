@@ -575,6 +575,23 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label>تست ارسال SMS</label>
+                        <div style="display: flex; gap: 12px; align-items: flex-end; margin-top: 8px;">
+                            <div style="flex: 1;">
+                                <input type="text" 
+                                       id="test-sms-phone" 
+                                       placeholder="شماره تلفن برای تست (مثال: 09123456789)"
+                                       style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 14px;">
+                            </div>
+                            <button type="button" id="send-test-sms" style="background: #4caf50; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; transition: background 0.2s ease; white-space: nowrap;">
+                                <span id="test-sms-icon">📤</span>
+                                <span id="test-sms-text">ارسال تست</span>
+                            </button>
+                        </div>
+                        <p id="test-sms-message" style="font-size: 12px; margin-top: 8px; display: none;"></p>
+                    </div>
                 </div>
             </div>
 
@@ -782,7 +799,7 @@
                     icon.style.animation = '';
                     
                     if (data.success) {
-                        balanceValue.innerHTML = '<span>' + data.data.balance + '</span> <span style="font-size: 14px; color: #757575; margin-right: 4px;">تومان</span>';
+                        balanceValue.innerHTML = '<span>' + data.data.balance + '</span> <span style="font-size: 14px; color: #757575; margin-right: 4px;">ریال</span>';
                         balanceError.style.display = 'none';
                     } else {
                         balanceValue.innerHTML = '<span style="opacity: 0.6;">--</span>';
@@ -805,6 +822,80 @@
         const style = document.createElement('style');
         style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
         document.head.appendChild(style);
+
+        // Test SMS functionality
+        const sendTestSmsBtn = document.getElementById('send-test-sms');
+        const testSmsPhone = document.getElementById('test-sms-phone');
+        const testSmsMessage = document.getElementById('test-sms-message');
+        const testSmsIcon = document.getElementById('test-sms-icon');
+        const testSmsText = document.getElementById('test-sms-text');
+        
+        if (sendTestSmsBtn) {
+            sendTestSmsBtn.addEventListener('click', function() {
+                const phone = testSmsPhone.value.trim();
+                
+                if (!phone) {
+                    testSmsMessage.textContent = 'لطفاً شماره تلفن را وارد کنید';
+                    testSmsMessage.style.color = '#f44336';
+                    testSmsMessage.style.display = 'block';
+                    return;
+                }
+
+                // Show loading state
+                sendTestSmsBtn.disabled = true;
+                sendTestSmsBtn.style.opacity = '0.7';
+                testSmsIcon.style.animation = 'spin 1s linear infinite';
+                testSmsText.textContent = 'در حال ارسال...';
+                testSmsMessage.style.display = 'none';
+                
+                // Make AJAX request
+                const formData = new FormData();
+                formData.append('action', 'arta_send_test_sms');
+                formData.append('nonce', '<?php echo wp_create_nonce("arta_settings_nonce"); ?>');
+                formData.append('phone', phone);
+                
+                fetch('<?php echo admin_url("admin-ajax.php"); ?>', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    sendTestSmsBtn.disabled = false;
+                    sendTestSmsBtn.style.opacity = '1';
+                    testSmsIcon.style.animation = '';
+                    testSmsText.textContent = 'ارسال تست';
+                    
+                    if (data.success) {
+                        testSmsMessage.textContent = data.data.message || 'پیامک با موفقیت ارسال شد';
+                        testSmsMessage.style.color = '#4caf50';
+                        testSmsMessage.style.display = 'block';
+                        testSmsPhone.value = '';
+                    } else {
+                        testSmsMessage.textContent = data.data.message || 'خطا در ارسال پیامک';
+                        testSmsMessage.style.color = '#f44336';
+                        testSmsMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    sendTestSmsBtn.disabled = false;
+                    sendTestSmsBtn.style.opacity = '1';
+                    testSmsIcon.style.animation = '';
+                    testSmsText.textContent = 'ارسال تست';
+                    testSmsMessage.textContent = 'خطا در ارتباط با سرور';
+                    testSmsMessage.style.color = '#f44336';
+                    testSmsMessage.style.display = 'block';
+                });
+            });
+
+            // Allow Enter key to trigger send
+            if (testSmsPhone) {
+                testSmsPhone.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendTestSmsBtn.click();
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html>
