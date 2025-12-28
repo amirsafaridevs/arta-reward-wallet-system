@@ -21,7 +21,7 @@ abstract class AbstractSingleton
      *
      * @return static
      */
-    public static function get(): static
+    public static function get()
     {
         if (static::$instance === null) {
             static::$instance = new static();
