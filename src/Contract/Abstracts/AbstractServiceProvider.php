@@ -2,8 +2,8 @@
 
 namespace ArtaRewardWalletSystem\Contract\Abstracts;
 
-use ArtaRewardWalletSystem\Contract\Interface\ContainerInterface;
-use ArtaRewardWalletSystem\Contract\Interface\ServiceProviderInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ContainerInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ServiceProviderInterface;
 
 /**
  * Abstract Service Provider
