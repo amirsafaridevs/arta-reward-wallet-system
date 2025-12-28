@@ -3,6 +3,7 @@ namespace ArtaRewardWalletSystem\Service\Admin;
 
 use ArtaRewardWalletSystem\Contract\Abstract\AbstractService;
 use ArtaRewardWalletSystem\Core\Application;
+use ArtaRewardWalletSystem\Helper\Sms;
 
 class ImportUsers extends AbstractService
 {
@@ -50,6 +51,10 @@ class ImportUsers extends AbstractService
             wp_send_json_error(['message' => 'اطلاعات کاربران نامعتبر است']);
             return;
         }
+
+        // Get SMS option
+        $sendSms = isset($_POST['send_sms']) && $_POST['send_sms'] === '1';
+        $registrationPattern = get_option('arta_sms_registration_pattern', '');
 
         $results = [
             'success' => [],
@@ -130,6 +135,19 @@ class ImportUsers extends AbstractService
             update_user_meta($user_id, 'billing_first_name', $name);
             update_user_meta($user_id, 'shipping_first_name', $name);
 
+            // Send SMS if enabled and pattern is configured
+            if ($sendSms && !empty($registrationPattern)) {
+                try {
+                    $smsData = [
+                        'name' => $name
+                    ];
+                    
+                    Sms::send($phone, $registrationPattern, $smsData);
+                } catch (\Exception $e) {
+                    // Log error but don't fail the import
+                    error_log('SMS sending failed for user ' . $user_id . ': ' . $e->getMessage());
+                }
+            }
 
             $results['success'][] = [
                 'name' => $name,
