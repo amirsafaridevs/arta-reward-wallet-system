@@ -45,12 +45,21 @@ class UserProfile extends AbstractService
             $fieldName = 'arta_' . $field['name'];
             
             // Get user meta - same method as AccountDetails.php uses
+            // Make sure we're using the correct user ID
+            $user_id = isset($user->ID) ? $user->ID : 0;
+            
+            if (!$user_id) {
+                continue; // Skip if no valid user ID
+            }
+            
+            // Get the value from user meta
             // get_user_meta($user_id, $meta_key, true) returns:
             // - false if meta doesn't exist (never been saved)
             // - empty string '' if meta exists but is empty
             // - the actual value (string, number, etc.) if meta exists with a value
-            $value = get_user_meta($user->ID, $fieldName, true);
+            $value = get_user_meta($user_id, $fieldName, true);
             
+      
             // Check if value should be considered empty
             // We only consider it empty if:
             // 1. false (meta key doesn't exist in database)
@@ -74,6 +83,12 @@ class UserProfile extends AbstractService
                     $value = reset($value);
                     $isEmpty = false;
                 }
+            }
+            
+            // Debug output (temporary - remove after fixing)
+            // Show debug info in a comment to see what's happening
+            if (current_user_can('manage_options')) {
+                echo '<!-- DEBUG: Field: ' . esc_html($fieldName) . ', User ID: ' . $user_id . ', Value: ' . var_export($value, true) . ', Type: ' . gettype($value) . ', IsEmpty: ' . ($isEmpty ? 'true' : 'false') . ' -->';
             }
             
             ?>
