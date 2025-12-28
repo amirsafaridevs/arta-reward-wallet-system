@@ -1,7 +1,7 @@
 <?php
 namespace ArtaRewardWalletSystem\Provider;
 
-use ArtaRewardWalletSystem\Contract\Abstract\AbstractServiceProvider;
+use ArtaRewardWalletSystem\Contract\Abstracts\AbstractServiceProvider;
 use ArtaRewardWalletSystem\Service\WooCommerce\AccountDetails;
 class WooCommerceServiceProvider extends AbstractServiceProvider
 {

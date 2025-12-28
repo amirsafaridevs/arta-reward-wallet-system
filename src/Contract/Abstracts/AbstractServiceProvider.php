@@ -1,6 +1,6 @@
 <?php
 
-namespace ArtaRewardWalletSystem\Contract\Abstract;
+namespace ArtaRewardWalletSystem\Contract\Abstracts;
 
 use ArtaRewardWalletSystem\Contract\Interface\ContainerInterface;
 use ArtaRewardWalletSystem\Contract\Interface\ServiceProviderInterface;
