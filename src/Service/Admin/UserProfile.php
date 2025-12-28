@@ -51,27 +51,29 @@ class UserProfile extends AbstractService
             // - the actual value (string, number, etc.) if meta exists with a value
             $value = get_user_meta($user->ID, $fieldName, true);
             
-            // Check if value is empty
-            // Only consider it empty if:
-            // 1. false (meta doesn't exist at all)
+            // Check if value should be considered empty
+            // We only consider it empty if:
+            // 1. false (meta key doesn't exist in database)
             // 2. null (shouldn't happen but just in case)
             // 3. empty string '' (meta exists but is empty)
             // 
             // Important: '0' and 0 are valid values and should be displayed!
-            // For checkbox, '0' means unchecked but it's still a value
-            $isEmpty = false;
+            // For checkbox, '0' means unchecked but it's still a value to show
             
-            // Strict comparison: only false, null, or empty string are considered empty
-            if ($value === false) {
-                $isEmpty = true; // Meta doesn't exist
-            } elseif ($value === null) {
-                $isEmpty = true; // Shouldn't happen but just in case
-            } elseif ($value === '') {
-                $isEmpty = true; // Meta exists but is empty
-            } else {
-                // Value exists - display it
-                // This includes '0', 0, and any other non-empty values
-                $isEmpty = false;
+            // Use strict comparison to check for empty values
+            // Only false, null, or empty string are considered empty
+            // Everything else (including '0', 0, spaces, etc.) should be displayed
+            $isEmpty = ($value === false || $value === null || $value === '');
+            
+            // Additional check: if value is an array (shouldn't happen but just in case)
+            if (is_array($value)) {
+                if (empty($value)) {
+                    $isEmpty = true;
+                } else {
+                    // If it's an array with values, get the first value
+                    $value = reset($value);
+                    $isEmpty = false;
+                }
             }
             
             ?>
