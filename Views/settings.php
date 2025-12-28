@@ -493,6 +493,16 @@
                     <h2>تنظیمات SMS</h2>
                     
                     <div class="form-group">
+                        <label for="sms_gateway">سامانه پیامکی</label>
+                        <select id="sms_gateway" name="sms_gateway">
+                            <option value="farazsms" <?php selected($settings['sms_gateway'], 'farazsms'); ?>>فراز اس ام اس</option>
+                        </select>
+                        <p style="font-size: 12px; color: #757575; margin-top: 8px;">
+                            سامانه پیامکی مورد استفاده خود را انتخاب کنید.
+                        </p>
+                    </div>
+                    
+                    <div class="form-group">
                         <label for="sms_api_key">API Key</label>
                         <input type="text" 
                                id="sms_api_key" 
@@ -502,6 +512,23 @@
                         <p style="font-size: 12px; color: #757575; margin-top: 8px;">
                             کلید API سرویس ارسال SMS خود را وارد کنید.
                         </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>موجودی حساب</label>
+                        <div id="sms-balance-container" style="background: linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%); padding: 20px; border-radius: 8px; border: 1px solid #90caf9; margin-top: 8px; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="flex: 1;">
+                                <div style="font-size: 12px; color: #757575; margin-bottom: 4px;">موجودی فعلی</div>
+                                <div id="sms-balance-value" style="font-size: 24px; font-weight: 500; color: #1976d2; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                                    <span style="opacity: 0.6;">--</span>
+                                </div>
+                            </div>
+                            <button type="button" id="refresh-sms-balance" style="background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; transition: background 0.2s ease; display: flex; align-items: center; gap: 8px;">
+                                <span id="refresh-icon">🔄</span>
+                                <span>بروزرسانی</span>
+                            </button>
+                        </div>
+                        <p id="sms-balance-error" style="font-size: 12px; color: #f44336; margin-top: 8px; display: none;"></p>
                     </div>
 
                     <div class="form-group">
@@ -517,14 +544,36 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="sms_welcome_message">پیام خوش‌آمدگویی</label>
-                        <textarea id="sms_welcome_message" 
-                                  name="sms_welcome_message" 
-                                  rows="4"
-                                  placeholder="خوش آمدید! حساب کاربری شما با موفقیت ایجاد شد."><?php echo esc_textarea($settings['sms_welcome_message']); ?></textarea>
+                        <label for="sms_registration_pattern">کد پترن پیامک ثبت نام</label>
+                        <input type="text" 
+                               id="sms_registration_pattern" 
+                               name="sms_registration_pattern" 
+                               value="<?php echo esc_attr($settings['sms_registration_pattern']); ?>"
+                               placeholder="مثال: 123456">
                         <p style="font-size: 12px; color: #757575; margin-top: 8px;">
-                            این پیام برای کاربران جدید ارسال می‌شود. می‌توانید از متغیرهای {name}، {username} و {password} استفاده کنید.
+                            کد پترن پیامک ثبت نام را وارد کنید.
                         </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>نمونه پیامک و متغیرها</label>
+                        <div style="background: #f5f5f5; padding: 16px; border-radius: 4px; border: 1px solid #e0e0e0; margin-top: 8px;">
+                            <div style="margin-bottom: 12px;">
+                                <strong style="color: #212121; font-size: 14px;">نمونه پیامک:</strong>
+                                <div style="background: white; padding: 12px; border-radius: 4px; margin-top: 8px; font-family: monospace; font-size: 13px; color: #424242; border: 1px solid #e0e0e0;">
+                                    خوش آمدید {name}! حساب کاربری شما با موفقیت ایجاد شد.
+                                </div>
+                            </div>
+                            <div>
+                                <strong style="color: #212121; font-size: 14px;">متغیرهای قابل استفاده:</strong>
+                                <ul style="margin-top: 8px; padding-right: 20px; color: #424242; font-size: 13px;">
+                                    <li><code style="background: #e3f2fd; padding: 2px 6px; border-radius: 3px;">{name}</code> - نام کاربر</li>
+                                </ul>
+                                <p style="font-size: 12px; color: #757575; margin-top: 12px; margin-bottom: 0;">
+                                    می‌توانید این متن را کپی کرده و در پنل سامانه پیامکی خود برای ساخت پترن استفاده کنید.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -699,6 +748,63 @@
         function removeField(btn) {
             btn.closest('.custom-field-item').remove();
         }
+
+        // SMS Balance functionality
+        const refreshBalanceBtn = document.getElementById('refresh-sms-balance');
+        const balanceValue = document.getElementById('sms-balance-value');
+        const balanceError = document.getElementById('sms-balance-error');
+        
+        if (refreshBalanceBtn) {
+            refreshBalanceBtn.addEventListener('click', function() {
+                const icon = document.getElementById('refresh-icon');
+                const originalText = refreshBalanceBtn.innerHTML;
+                
+                // Show loading state
+                refreshBalanceBtn.disabled = true;
+                refreshBalanceBtn.style.opacity = '0.7';
+                icon.style.animation = 'spin 1s linear infinite';
+                balanceError.style.display = 'none';
+                balanceValue.innerHTML = '<span style="opacity: 0.6;">در حال دریافت...</span>';
+                
+                // Make AJAX request
+                const formData = new FormData();
+                formData.append('action', 'arta_get_sms_balance');
+                formData.append('nonce', '<?php echo wp_create_nonce("arta_settings_nonce"); ?>');
+                
+                fetch('<?php echo admin_url("admin-ajax.php"); ?>', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    refreshBalanceBtn.disabled = false;
+                    refreshBalanceBtn.style.opacity = '1';
+                    icon.style.animation = '';
+                    
+                    if (data.success) {
+                        balanceValue.innerHTML = '<span>' + data.data.balance + '</span> <span style="font-size: 14px; color: #757575; margin-right: 4px;">تومان</span>';
+                        balanceError.style.display = 'none';
+                    } else {
+                        balanceValue.innerHTML = '<span style="opacity: 0.6;">--</span>';
+                        balanceError.textContent = data.data.message || 'خطا در دریافت موجودی';
+                        balanceError.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    refreshBalanceBtn.disabled = false;
+                    refreshBalanceBtn.style.opacity = '1';
+                    icon.style.animation = '';
+                    balanceValue.innerHTML = '<span style="opacity: 0.6;">--</span>';
+                    balanceError.textContent = 'خطا در ارتباط با سرور';
+                    balanceError.style.display = 'block';
+                });
+            });
+        }
+
+        // Add CSS for spin animation
+        const style = document.createElement('style');
+        style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+        document.head.appendChild(style);
     </script>
 </body>
 </html>

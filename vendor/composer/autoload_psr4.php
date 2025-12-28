@@ -6,5 +6,6 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'IPPanel\\' => array($vendorDir . '/ippanel/php-rest-sdk/src/IPPanel'),
     'ArtaRewardWalletSystem\\' => array($baseDir . '/src'),
 );

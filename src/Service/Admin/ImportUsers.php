@@ -3,7 +3,6 @@ namespace ArtaRewardWalletSystem\Service\Admin;
 
 use ArtaRewardWalletSystem\Contract\Abstract\AbstractService;
 use ArtaRewardWalletSystem\Core\Application;
-use ArtaRewardWalletSystem\Helper\Sms;
 
 class ImportUsers extends AbstractService
 {
@@ -51,9 +50,6 @@ class ImportUsers extends AbstractService
             wp_send_json_error(['message' => 'اطلاعات کاربران نامعتبر است']);
             return;
         }
-
-        // Get SMS option
-        $sendSms = isset($_POST['send_sms']) && $_POST['send_sms'] === '1';
 
         $results = [
             'success' => [],
@@ -134,27 +130,6 @@ class ImportUsers extends AbstractService
             update_user_meta($user_id, 'billing_first_name', $name);
             update_user_meta($user_id, 'shipping_first_name', $name);
 
-            // Send SMS if enabled
-            if ($sendSms) {
-                try {
-                    $smsMessage = get_option('arta_sms_welcome_message', 'خوش آمدید! حساب کاربری شما با موفقیت ایجاد شد.');
-                    if (empty($smsMessage)) {
-                        $smsMessage = 'خوش آمدید! حساب کاربری شما با موفقیت ایجاد شد.';
-                    }
-                    
-                    // Replace placeholders
-                    $smsMessage = str_replace('{name}', $name, $smsMessage);
-                    $smsMessage = str_replace('{username}', $username, $smsMessage);
-                    $smsMessage = str_replace('{password}', $password, $smsMessage);
-                    
-                    // Send SMS using helper class
-                    // Note: send is static method
-                    Sms::send($phone, $smsMessage);
-                } catch (\Exception $e) {
-                    // Log error but don't fail the import
-                    error_log('SMS sending failed for user ' . $user_id . ': ' . $e->getMessage());
-                }
-            }
 
             $results['success'][] = [
                 'name' => $name,

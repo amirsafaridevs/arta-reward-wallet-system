@@ -7,6 +7,10 @@ namespace Composer\Autoload;
 class ComposerStaticInitafec31c6d7293a9d1c88592e94ae883b
 {
     public static $prefixLengthsPsr4 = array (
+        'I' => 
+        array (
+            'IPPanel\\' => 8,
+        ),
         'A' => 
         array (
             'ArtaRewardWalletSystem\\' => 23,
@@ -14,6 +18,10 @@ class ComposerStaticInitafec31c6d7293a9d1c88592e94ae883b
     );
 
     public static $prefixDirsPsr4 = array (
+        'IPPanel\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ippanel/php-rest-sdk/src/IPPanel',
+        ),
         'ArtaRewardWalletSystem\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
