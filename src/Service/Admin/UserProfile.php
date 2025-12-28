@@ -43,10 +43,41 @@ class UserProfile extends AbstractService
             }
             
             $fieldName = 'arta_' . $field['name'];
+            
+            // Get user meta - same method as AccountDetails.php uses
             $value = get_user_meta($user->ID, $fieldName, true);
             
-            // Check if value is empty (but allow '0' and 0)
-            $isEmpty = (empty($value) && $value !== '0' && $value !== 0 && $value !== false);
+            // get_user_meta returns:
+            // - false if meta doesn't exist (never been saved)
+            // - empty string '' if meta exists but is empty
+            // - the actual value if meta exists with a value
+            // - '0' or 0 are valid values (especially for checkbox)
+            
+            // Determine if value should be shown as empty
+            // false = meta doesn't exist (user never filled this field)
+            // '' = meta exists but is empty (user cleared the field)
+            // null = same as false
+            $isEmpty = false;
+            
+            if ($value === false || $value === null) {
+                // Meta doesn't exist - user never filled this field
+                $isEmpty = true;
+            } elseif ($value === '') {
+                // Meta exists but is empty - user cleared the field
+                $isEmpty = true;
+            } else {
+                // Value exists - show it
+                $isEmpty = false;
+            }
+            
+            // Special handling for checkbox: '0' means unchecked, but it's still a value
+            if ($field['type'] === 'checkbox') {
+                if ($value === '0' || $value === 0) {
+                    $isEmpty = false; // Show as unchecked
+                } elseif ($value === false || $value === null || $value === '') {
+                    $isEmpty = false; // Show as unchecked (default state)
+                }
+            }
             
             ?>
             <tr>
