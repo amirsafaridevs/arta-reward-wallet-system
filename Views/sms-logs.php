@@ -143,26 +143,47 @@
                             <th>شماره گیرنده</th>
                             <th>پیام</th>
                             <th>وضعیت</th>
+                            <th>Response کامل</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($logs as $log): ?>
                             <?php 
-                            $response = $log['response'] ?? [];
-                            $to = $response['to'] ?? '-';
-                            $message = $response['message'] ?? '-';
-                            $status = $response['status'] ?? 'unknown';
+                            $logData = $log['response'] ?? [];
+                            $to = $logData['to'] ?? '-';
+                            $status = $logData['status'] ?? 'unknown';
+                            
+                            // Get message from response
+                            $smsResponse = $logData['response'] ?? [];
+                            $message = $smsResponse['message'] ?? '-';
+                            $code = $smsResponse['code'] ?? '';
+                            
+                            // Build message with reason if error
+                            if ($status !== 'success' && !empty($smsResponse['message'])) {
+                                $message = $smsResponse['message'];
+                                if (!empty($code)) {
+                                    $message .= ' (کد: ' . esc_html($code) . ')';
+                                }
+                            } elseif ($status === 'success') {
+                                $message = $smsResponse['message'] ?? 'پیامک با موفقیت ارسال شد';
+                                if (!empty($smsResponse['message_id'])) {
+                                    $message .= ' (شناسه: ' . esc_html($smsResponse['message_id']) . ')';
+                                }
+                            }
                             ?>
                             <tr>
                                 <td><?php echo esc_html($log['datetime'] ?? '-'); ?></td>
                                 <td><?php echo esc_html($to); ?></td>
                                 <td style="max-width: 400px; word-wrap: break-word;">
-                                    <?php echo esc_html(mb_substr($message, 0, 100)) . (mb_strlen($message) > 100 ? '...' : ''); ?>
+                                    <?php echo esc_html(mb_substr($message, 0, 150)) . (mb_strlen($message) > 150 ? '...' : ''); ?>
                                 </td>
                                 <td>
                                     <span class="status-<?php echo $status === 'success' ? 'success' : 'failed'; ?>">
                                         <?php echo $status === 'success' ? '✓ موفق' : '✗ ناموفق'; ?>
                                     </span>
+                                </td>
+                                <td style="max-width: 500px; word-wrap: break-word;">
+                                    <pre style="background: #f5f5f5; padding: 8px; border-radius: 4px; font-size: 11px; max-height: 200px; overflow-y: auto; margin: 0; white-space: pre-wrap; word-wrap: break-word;"><?php echo esc_html(json_encode($smsResponse, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)); ?></pre>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

@@ -1,7 +1,7 @@
 <?php
 
 namespace ArtaRewardWalletSystem\Helper;
-
+use ArtaRewardWalletSystem\Service\SmsGetway\FarazSms;
 
 class Sms
 {
@@ -11,28 +11,42 @@ class Sms
     /**
      * Static method to send SMS (creates instance internally)
      */
-    public static function send($to, $message)
+    public static function send($to, $pattern='',$data=[])
     {
         $instance = new self();
         $instance->setConfig();
-        return $instance->sendSms($to, $message);
+        return $instance->sendSms($to, $pattern, $data);
     }
     
     protected function setConfig()
     {
+        
         self::$apiKey = get_option('arta_sms_api_key') ?? '';
         self::$parentNumber = get_option('arta_sms_parent_number') ?? '';
     }
     
-    protected function sendSms($to, $message)
+    protected function sendSms($to, $pattern, $data)
     {
-        $response = null; // Initialize response variable
-        $this->setLog(['to' => $to, 'message' => $message, 'response' => $response, 'status' => 'success']);
-        return [
-            'status' => 'success',
-            'message' => 'SMS sent successfully',
-            'response' => $response
+        FarazSms::setConfig('api_key', self::$apiKey);
+        FarazSms::setConfig('pattern', $pattern);
+        FarazSms::setConfig('parent_number', self::$parentNumber);
+        FarazSms::setConfig('to', $to);
+        FarazSms::setConfig('data', $data);
+        
+        $response = FarazSms::sendSms();
+        
+        // Log the response
+        $logData = [
+            'to' => $to,
+            'pattern' => $pattern,
+            'data' => $data,
+            'response' => $response,
+            'status' => $response['status'] ?? 'unknown'
         ];
+        $this->setLog($logData);
+        
+        // Return the response
+        return $response;
     }
 
     protected function setLog($response)

@@ -4,6 +4,7 @@ namespace ArtaRewardWalletSystem\Service\Admin;
 use ArtaRewardWalletSystem\Contract\Abstract\AbstractService;
 use ArtaRewardWalletSystem\Core\Application;
 use ArtaRewardWalletSystem\Service\SmsGetway\FarazSms;
+use ArtaRewardWalletSystem\Helper\Sms;
 use IPPanel\Client;
 
 class SettingMenu extends AbstractService
@@ -16,6 +17,7 @@ class SettingMenu extends AbstractService
         add_action('admin_menu', [$this, 'addMenu']);
         add_action('admin_post_arta_save_settings', [$this, 'saveSettings']);
         add_action('wp_ajax_arta_get_sms_balance', [$this, 'getSmsBalance']);
+        add_action('wp_ajax_arta_send_test_sms', [$this, 'sendTestSms']);
     }
 
     public function addMenu(): void
@@ -199,9 +201,7 @@ class SettingMenu extends AbstractService
         }
 
         try {
-            // تنظیم API key و استفاده از FarazSms
-            $client = new Client($apiKey);
-            FarazSms::setClient($client);
+            FarazSms::setConfig('api_key', $apiKey);
             $balance = FarazSms::getBalance();
             
             wp_send_json_success([
@@ -211,6 +211,55 @@ class SettingMenu extends AbstractService
         } catch (\Exception $e) {
             wp_send_json_error([
                 'message' => 'خطا در دریافت موجودی: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function sendTestSms(): void
+    {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'دسترسی غیرمجاز']);
+            return;
+        }
+
+        check_ajax_referer('arta_settings_nonce', 'nonce');
+
+        $phone = isset($_POST['phone']) ? sanitize_text_field($_POST['phone']) : '';
+        $registrationPattern = get_option('arta_sms_registration_pattern', '');
+        
+        if (empty($phone)) {
+            wp_send_json_error(['message' => 'شماره تلفن وارد نشده است']);
+            return;
+        }
+
+        if (empty($registrationPattern)) {
+            wp_send_json_error(['message' => 'کد پترن پیامک ثبت نام تنظیم نشده است']);
+            return;
+        }
+
+        try {
+            $smsData = [
+                'name' => 'تست'
+            ];
+            
+            $result = Sms::send($phone, $registrationPattern, $smsData);
+            
+            // Check if SMS was sent successfully
+            if (isset($result['status']) && $result['status'] === 'success') {
+                wp_send_json_success([
+                    'message' => $result['message'] ?? 'پیامک تست با موفقیت ارسال شد',
+                    'result' => $result
+                ]);
+            } else {
+                wp_send_json_error([
+                    'message' => $result['message'] ?? 'خطا در ارسال پیامک',
+                    'code' => $result['code'] ?? 'unknown',
+                    'result' => $result
+                ]);
+            }
+        } catch (\Exception $e) {
+            wp_send_json_error([
+                'message' => 'خطا در ارسال پیامک: ' . $e->getMessage()
             ]);
         }
     }
