@@ -2,7 +2,7 @@
 
 namespace ArtaRewardWalletSystem\App;
 
-use ArtaRewardWalletSystem\Contract\Abstract\AbstractSingleton;
+use ArtaRewardWalletSystem\Contract\Abstracts\AbstractSingleton;
 use ArtaRewardWalletSystem\Core\Application;
 use ArtaRewardWalletSystem\Provider\AdminServiceProvider;
 use ArtaRewardWalletSystem\Provider\CheckDependencyServiceProvider;
