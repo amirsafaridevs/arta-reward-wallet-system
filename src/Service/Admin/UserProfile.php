@@ -45,38 +45,33 @@ class UserProfile extends AbstractService
             $fieldName = 'arta_' . $field['name'];
             
             // Get user meta - same method as AccountDetails.php uses
-            $value = get_user_meta($user->ID, $fieldName, true);
-            
-            // get_user_meta returns:
+            // get_user_meta($user_id, $meta_key, true) returns:
             // - false if meta doesn't exist (never been saved)
             // - empty string '' if meta exists but is empty
-            // - the actual value if meta exists with a value
-            // - '0' or 0 are valid values (especially for checkbox)
+            // - the actual value (string, number, etc.) if meta exists with a value
+            $value = get_user_meta($user->ID, $fieldName, true);
             
-            // Determine if value should be shown as empty
-            // false = meta doesn't exist (user never filled this field)
-            // '' = meta exists but is empty (user cleared the field)
-            // null = same as false
+            // Check if value is empty
+            // Only consider it empty if:
+            // 1. false (meta doesn't exist at all)
+            // 2. null (shouldn't happen but just in case)
+            // 3. empty string '' (meta exists but is empty)
+            // 
+            // Important: '0' and 0 are valid values and should be displayed!
+            // For checkbox, '0' means unchecked but it's still a value
             $isEmpty = false;
             
-            if ($value === false || $value === null) {
-                // Meta doesn't exist - user never filled this field
-                $isEmpty = true;
+            // Strict comparison: only false, null, or empty string are considered empty
+            if ($value === false) {
+                $isEmpty = true; // Meta doesn't exist
+            } elseif ($value === null) {
+                $isEmpty = true; // Shouldn't happen but just in case
             } elseif ($value === '') {
-                // Meta exists but is empty - user cleared the field
-                $isEmpty = true;
+                $isEmpty = true; // Meta exists but is empty
             } else {
-                // Value exists - show it
+                // Value exists - display it
+                // This includes '0', 0, and any other non-empty values
                 $isEmpty = false;
-            }
-            
-            // Special handling for checkbox: '0' means unchecked, but it's still a value
-            if ($field['type'] === 'checkbox') {
-                if ($value === '0' || $value === 0) {
-                    $isEmpty = false; // Show as unchecked
-                } elseif ($value === false || $value === null || $value === '') {
-                    $isEmpty = false; // Show as unchecked (default state)
-                }
             }
             
             ?>
