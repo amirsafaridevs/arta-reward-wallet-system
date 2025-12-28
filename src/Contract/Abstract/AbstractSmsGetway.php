@@ -6,6 +6,7 @@ use ArtaRewardWalletSystem\Contract\Interface\SmsGetwayInterface;
 
 abstract class AbstractSmsGetway implements SmsGetwayInterface
 {
+    protected static $instance = null;
     protected static array $config = [];
     protected static string $message = '';
     protected static string $to = '';
@@ -14,7 +15,14 @@ abstract class AbstractSmsGetway implements SmsGetwayInterface
     protected static string $apiUrl = '';
 
 
-    abstract public static function sendSms(): bool;
+    abstract public static function sendSms(): array;
+    
+    // Interface method implementation
+    public function send(): bool
+    {
+        $result = static::sendSms();
+        return isset($result['status']) && $result['status'] === 'success';
+    }
     
     public static function createPattern(): array
     {
@@ -43,7 +51,7 @@ abstract class AbstractSmsGetway implements SmsGetwayInterface
         }
         return self::$instance;
     }
-    public static function setConfig(string $key, string $value): object
+    public static function setConfig(string $key, mixed $value): object
     {
         self::$config[$key] = $value;
         return self::get();
@@ -73,19 +81,22 @@ abstract class AbstractSmsGetway implements SmsGetwayInterface
         return self::get();
     }
 
-    public static function getConfig(): array
+    public function getConfig(): array
     {
         return self::$config;
     }
-    public static function getMessage(): string
+    
+    public function getMessage(): string
     {
         return self::$message;
     }
-    public static function getTo(): string
+    
+    public function getTo(): string
     {
         return self::$to;
     }
-    public static function getResponse(): array
+    
+    public function getResponse(): array
     {
         return self::$response;
     }
