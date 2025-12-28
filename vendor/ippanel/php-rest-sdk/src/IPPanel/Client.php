@@ -253,13 +253,13 @@ class Client
      */
     public function sendPattern(string $patternCode, string $originator, string $recipient, array $variables): int
     {
+        
         $res = $this->_httpClient->post("/sms/pattern/normal/send", array(
             "code" => $patternCode,
             "sender" => $originator,
             "recipient" => $recipient,
             "variable" => $variables,
         ));
-
         if (!isset($res->data->message_id)) {
             throw new Exception("returned response not valid", 1);
         }
