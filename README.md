@@ -77,13 +77,13 @@ This plugin follows modern software architecture principles and implements sever
   - Dependency tracking
 
 #### 4. **Singleton Pattern**
-- **Location**: `src/Contract/Abstract/AbstractSingleton.php`
+- **Location**: `src/Contract/Abstracts/AbstractSingleton.php`
 - **Purpose**: Ensures single instance of critical classes
 - **Implementation**: Used in `App` and `Container` classes
 - **Features**: Thread-safe initialization, cloning prevention
 
 #### 5. **Abstract Factory Pattern**
-- **Location**: `src/Contract/Abstract/`
+- **Location**: `src/Contract/Abstracts/`
 - **Purpose**: Provides base implementations for services and providers
 - **Classes**:
   - `AbstractService`: Base for all service classes
@@ -96,7 +96,7 @@ This plugin follows modern software architecture principles and implements sever
 - **Features**: Static helper methods for common operations
 
 #### 7. **Template Method Pattern**
-- **Location**: `src/Contract/Abstract/AbstractServiceProvider.php`
+- **Location**: `src/Contract/Abstracts/AbstractServiceProvider.php`
 - **Purpose**: Defines skeleton of algorithm in base class
 - **Implementation**: `registerServices()` and `bootServices()` methods
 
@@ -393,7 +393,7 @@ Example:
 ```php
 namespace ArtaRewardWalletSystem\Service\Admin;
 
-use ArtaRewardWalletSystem\Contract\Abstract\AbstractService;
+use ArtaRewardWalletSystem\Contract\Abstracts\AbstractService;
 
 class MyNewService extends AbstractService
 {
