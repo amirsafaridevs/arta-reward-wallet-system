@@ -3,7 +3,7 @@
 namespace ArtaRewardWalletSystem\Core;
 
 use Closure;
-use ArtaRewardWalletSystem\Contract\Interface\ContainerInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ContainerInterface;
 use ReflectionClass;
 use ReflectionParameter;
 
