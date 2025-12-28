@@ -3,6 +3,8 @@ namespace ArtaRewardWalletSystem\Service\Admin;
 
 use ArtaRewardWalletSystem\Contract\Abstract\AbstractService;
 use ArtaRewardWalletSystem\Core\Application;
+use ArtaRewardWalletSystem\Service\SmsGetway\FarazSms;
+use IPPanel\Client;
 
 class SettingMenu extends AbstractService
 {
@@ -13,6 +15,7 @@ class SettingMenu extends AbstractService
         $this->application = $this->getContainer()->get('app');
         add_action('admin_menu', [$this, 'addMenu']);
         add_action('admin_post_arta_save_settings', [$this, 'saveSettings']);
+        add_action('wp_ajax_arta_get_sms_balance', [$this, 'getSmsBalance']);
     }
 
     public function addMenu(): void
@@ -67,13 +70,15 @@ class SettingMenu extends AbstractService
         update_option('arta_popup_message', $popupMessage);
 
         // Save SMS settings
+        $smsGateway = isset($_POST['sms_gateway']) ? sanitize_text_field($_POST['sms_gateway']) : 'farazsms';
         $smsApiKey = isset($_POST['sms_api_key']) ? sanitize_text_field($_POST['sms_api_key']) : '';
         $smsParentNumber = isset($_POST['sms_parent_number']) ? sanitize_text_field($_POST['sms_parent_number']) : '';
-        $smsWelcomeMessage = isset($_POST['sms_welcome_message']) ? sanitize_textarea_field($_POST['sms_welcome_message']) : '';
+        $smsRegistrationPattern = isset($_POST['sms_registration_pattern']) ? sanitize_text_field($_POST['sms_registration_pattern']) : '';
 
+        update_option('arta_sms_gateway', $smsGateway);
         update_option('arta_sms_api_key', $smsApiKey);
         update_option('arta_sms_parent_number', $smsParentNumber);
-        update_option('arta_sms_welcome_message', $smsWelcomeMessage);
+        update_option('arta_sms_registration_pattern', $smsRegistrationPattern);
 
         // Save account fields settings
         // Get default fields to ensure we save all of them
@@ -126,9 +131,10 @@ class SettingMenu extends AbstractService
             'completion_bonus_amount' => get_option('arta_completion_bonus_amount', 0),
             'enable_popup' => get_option('arta_enable_popup', 1),
             'popup_message' => get_option('arta_popup_message', 'با تکمیل اطلاعات حساب خود پاداش بگیرید'),
+            'sms_gateway' => get_option('arta_sms_gateway', 'farazsms'),
             'sms_api_key' => get_option('arta_sms_api_key', ''),
             'sms_parent_number' => get_option('arta_sms_parent_number', ''),
-            'sms_welcome_message' => get_option('arta_sms_welcome_message', 'خوش آمدید! حساب کاربری شما با موفقیت ایجاد شد.'),
+            'sms_registration_pattern' => get_option('arta_sms_registration_pattern', ''),
         ];
     }
 
@@ -174,5 +180,38 @@ class SettingMenu extends AbstractService
         }
 
         return $defaultFields;
+    }
+
+    public function getSmsBalance(): void
+    {
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'دسترسی غیرمجاز']);
+            return;
+        }
+
+        check_ajax_referer('arta_settings_nonce', 'nonce');
+
+        $apiKey = get_option('arta_sms_api_key', '');
+        
+        if (empty($apiKey)) {
+            wp_send_json_error(['message' => 'API Key وارد نشده است']);
+            return;
+        }
+
+        try {
+            // تنظیم API key و استفاده از FarazSms
+            $client = new Client($apiKey);
+            FarazSms::setClient($client);
+            $balance = FarazSms::getBalance();
+            
+            wp_send_json_success([
+                'balance' => number_format($balance, 0, '.', ','),
+                'raw_balance' => $balance
+            ]);
+        } catch (\Exception $e) {
+            wp_send_json_error([
+                'message' => 'خطا در دریافت موجودی: ' . $e->getMessage()
+            ]);
+        }
     }
 }
