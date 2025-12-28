@@ -1,7 +1,7 @@
 <?php
 namespace ArtaRewardWalletSystem\Service\SmsGetway;
 
-use ArtaRewardWalletSystem\Contract\Abstract\AbstractSmsGetway;
+use ArtaRewardWalletSystem\Contract\Abstracts\AbstractSmsGetway;
 use IPPanel\Client;
 
 class FarazSms extends AbstractSmsGetway
