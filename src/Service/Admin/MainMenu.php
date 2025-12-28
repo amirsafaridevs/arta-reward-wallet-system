@@ -1,7 +1,7 @@
 <?php
 namespace ArtaRewardWalletSystem\Service\Admin;
 
-use ArtaRewardWalletSystem\Contract\Abstract\AbstractService;
+use ArtaRewardWalletSystem\Contract\Abstracts\AbstractService;
 use ArtaRewardWalletSystem\Core\Application;
 
 class MainMenu extends AbstractService
