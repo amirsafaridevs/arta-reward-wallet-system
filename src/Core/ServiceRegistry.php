@@ -2,9 +2,9 @@
 
 namespace ArtaRewardWalletSystem\Core;
 
-use ArtaRewardWalletSystem\Contract\Interface\ContainerInterface;
-use ArtaRewardWalletSystem\Contract\Interface\ServiceProviderInterface as ContractServiceProviderInterface;
-use ArtaRewardWalletSystem\Contract\Interface\ServiceRegistryInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ContainerInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ServiceProviderInterface as ContractServiceProviderInterface;
+use ArtaRewardWalletSystem\Contract\Interfaces\ServiceRegistryInterface;
 
 /**
  * Service Registry
