@@ -2,7 +2,7 @@
 
 namespace ArtaRewardWalletSystem\Service\WooCommerce;
 
-use ArtaRewardWalletSystem\Contract\Abstract\AbstractService;
+use ArtaRewardWalletSystem\Contract\Abstracts\AbstractService;
 use ArtaRewardWalletSystem\Core\Application;
 
 class AccountDetails extends AbstractService
