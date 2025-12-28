@@ -124,7 +124,7 @@ class HTTPClient
         }
 
         $response = curl_exec($curl);
-
+        error_log($response);
         if ($response === false) {
             throw new Errors\HttpException(curl_error($curl));
         }
@@ -133,7 +133,7 @@ class HTTPClient
         $status = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         curl_close($curl);
-
+        
         // http status code is parsable or not
         if (!in_array($status, $this->_supportedStatusCodes)) {
             throw new Errors\HttpException("unexpected http error occurred", $status);
